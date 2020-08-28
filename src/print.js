@@ -10,6 +10,13 @@ function printDetailsInfo(invoice, outstanding) {
     console.log(`amount: ${invoice.dueDate.toLocaleDateString()}`);
 }
 
+function reduceDate(invoice, outstanding) {
+    // record due date
+    const today = new Date();
+    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
+    printDetailsInfo(invoice, outstanding);
+}
+
 function printOwing (invoice) {
     let outstanding = 0;
     printInit();
@@ -18,9 +25,5 @@ function printOwing (invoice) {
     for (const o of invoice.borderSpacing) {
         outstanding += o.amount;
     }
-
-    // record due date
-    const today = new Date();
-    invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
-    printDetailsInfo(invoice, outstanding);
+    reduceDate(invoice, outstanding);
 }
