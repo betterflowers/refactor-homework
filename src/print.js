@@ -11,14 +11,12 @@ function printDetailsInfo(invoice, outstanding) {
 }
 
 function reduceDate(invoice, outstanding) {
-    // record due date
     const today = new Date();
     invoice.dueDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
     printDetailsInfo(invoice, outstanding);
 }
 
 function calculateOutstanding(invoice, outstanding) {
-    // calculate outstanding
     for (const o of invoice.borderSpacing) {
         outstanding += o.amount;
     }
