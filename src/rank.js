@@ -30,15 +30,14 @@ function captainHistoryRisk (voyage, history) {
     return Math.max(result, 0);
 }
 
+function isChinaZoneOrEastIndies(voyage) {
+    return voyage.zone === 'china' || voyage.zone === 'east-indies'
+
+}
+
 function voyageProfitFactor (voyage, history) {
-    let result = 2;
-    if (voyage.zone === 'china') {
-        result += 1;
-    }
-    if (voyage.zone === 'east-indies') {
-        result += 1;
-    }
-    if (voyage.zone === 'china' && hasChina(history)) {
+    let result = (isChinaZoneOrEastIndies(voyage)) ? 3 : 2;
+    if (isChinaZoneAndHasChina(voyage, history)) {
         result += 3;
         if (history.length > 10) {
             result += 1;
