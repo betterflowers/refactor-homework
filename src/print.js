@@ -17,13 +17,17 @@ function reduceDate(invoice, outstanding) {
     printDetailsInfo(invoice, outstanding);
 }
 
-function printOwing (invoice) {
-    let outstanding = 0;
-    printInit();
-
+function calculateOutstanding(invoice, outstanding) {
     // calculate outstanding
     for (const o of invoice.borderSpacing) {
         outstanding += o.amount;
     }
+    return outstanding;
+}
+
+function printOwing (invoice) {
+    let outstanding = 0;
+    printInit();
+    outstanding = calculateOutstanding(invoice, outstanding);
     reduceDate(invoice, outstanding);
 }
