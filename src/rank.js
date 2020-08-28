@@ -1,13 +1,3 @@
-function getIncludesVoyageZoneResult(voyage, result) {
-    if ([
-        'china',
-        'east-indies',
-    ].includes(voyage.zone)) {
-        result += 4;
-    }
-    return result;
-}
-
 function voyageRisk (voyage) {
     let result = 1;
     if (voyage.length > 4) {
@@ -16,7 +6,12 @@ function voyageRisk (voyage) {
     if (voyage.length > 8) {
         result += voyage.length - 8;
     }
-    result = getIncludesVoyageZoneResult(voyage, result);
+    if ([
+        'china',
+        'east-indies',
+    ].includes(voyage.zone)) {
+        result += 4;
+    }
     return Math.max(result, 0);
 }
 
@@ -24,36 +19,39 @@ function hasChina (history) {
     return history.some(v => 'china' === v.zone);
 }
 
-function isVoyageZoneChinaAndHasChina(voyage, history) {
-    return voyage.zone === 'china' && hasChina(history);
-}
-
-function getHistoryFilterResult(history) {
-    return history.filter(v => v.profit < 0).length;
-}
-
 function captainHistoryRisk (voyage, history) {
     let result = 1;
     if (history.length < 5) {
         result += 4;
     }
-    result += getHistoryFilterResult(history);
-    if (isVoyageZoneChinaAndHasChina(voyage, history)) {
+    result += history.filter(v => v.profit < 0).length;
+    if (voyage.zone === 'china' && hasChina(history)) {
         result -= 2;
     }
     return Math.max(result, 0);
 }
 
-function getChinaAndHasChinaResult(voyage, history, result) {
-    if (isVoyageZoneChinaAndHasChina(voyage, history)) {
+function voyageProfitFactor (voyage, history) {
+    let result = 2;
+    if (voyage.zone === 'china') {
+        result += 1;
+    }
+    if (voyage.zone === 'east-indies') {
+        result += 1;
+    }
+    if (voyage.zone === 'china' && hasChina(history)) {
         result += 3;
-        if (history.length > 10 || voyage.length > 12) {
+        if (history.length > 10) {
+            result += 1;
+        }
+        if (voyage.length > 12) {
             result += 1;
         }
         if (voyage.length > 18) {
             result -= 1;
         }
-    } else {
+    }
+    else {
         if (history.length > 8) {
             result += 1;
         }
@@ -64,33 +62,23 @@ function getChinaAndHasChinaResult(voyage, history, result) {
     return result;
 }
 
-function voyageProfitFactor (voyage, history) {
-    let result = 2;
-    if (voyage.zone === 'china' || voyage.zone === 'east-indies') {
-        result += 1;
-    }
-    result = getChinaAndHasChinaResult(voyage, history, result);
-    return result;
-}
-
-function getReturnValue(vpf, vr, chr) {
-    if (vpf * 3 > (vr + chr * 2)) {
-        return 'A';
-    } else {
-        return 'B';
-    }
-}
-
 function rating (voyage, history) {
     const vpf = voyageProfitFactor(voyage, history);
     const vr = voyageRisk(voyage);
     const chr = captainHistoryRisk(voyage, history);
-    return getReturnValue(vpf, vr, chr);
+    if (vpf * 3 > (vr + chr * 2)) {
+        return 'A';
+    }
+    else {
+        return 'B';
+    }
 }
 
 module.exports = {
     voyageRisk,
     captainHistoryRisk,
+    voyageProfitFactor,
+    rating
 };
 
 const voyage = {
